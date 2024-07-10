@@ -1,0 +1,56 @@
+h1 {
+    font-family: Arial;
+    font-size: medium;
+}
+
+body {
+    height: 100%;
+    margin: 100px;
+    display: flex;
+    justify-content: center;
+    place-items: center;
+    background-color: #f2f2f2;
+}
+.login-container {
+    width: 50%;
+    height: 70%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+
+textarea.form-control {
+    height: auto;
+}
+.form-group {
+    margin-bottom: 1rem;
+}
+
+hr {
+    box-sizing: content-box;
+    height: 0;
+    overflow: visible;
+}
+
+input[type="checkbox"] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+textarea {
+    overflow: auto;
+    resize: vertical;
+}
