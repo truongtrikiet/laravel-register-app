@@ -15,12 +15,10 @@ class AccountController extends Controller
         return view('home', ['accounts' => $accounts]);
     }
 
-public function account($username) {
-        $account = Account::where('username', $username) -> first();
-        if (!$account) {
-            return redirect() -> back() -> with('message', 'Account not found');
-        }
-    return view('form.Account', ['account' => $account]);
+    //show information account
+    public function account($username) {
+        $account = Account::where('username', $username) -> firstOrFail();
+        return view('form.Account', compact('account'));
 }
 
 
@@ -53,14 +51,18 @@ public function account($username) {
             'password' => 'required|string',
         ]);
         $account = Account::where('username', $request-> username)-> first();
-        if ($account && Hash::check($request-> password, $account-> password)) {
-            auth() -> login($account);
 
-            return redirect() -> route('account', ['username' => $account-> username]);
+        if ($account && $account -> blocked) {
+            return back() -> withErrors(['username' => 'Account was blocked.']);
+        }
+
+        if ($account && Hash::check($request-> password, $account-> password)) {
+                Auth::login($account);
+
+            return redirect() -> route('accountShow', ['username' => $account-> username]);
         }
         return redirect()->back()->with('message', 'Wrong username or password. Please try again.');
     }
-
 
 
 //register
@@ -86,7 +88,7 @@ public function account($username) {
             $account = new Account();
             $account -> fullname = $request -> input('fullname');
             $account -> username = $request -> input('username');
-            $account-> password = Hash::make($request-> input('password'));
+            $account -> password = Hash::make($request-> input('password'));
             $account -> email = $request -> input('email');
             $account -> phone = $request -> input('phone');
             $account -> address = $request -> input('address');
@@ -95,4 +97,58 @@ public function account($username) {
 //            dd($account -> all());
         return redirect() -> back() -> with('success', 'Congratulation.');
     }
+
+    //show all accounts
+    public function show() {
+        $accounts = Account::all();
+        return view('views.home', compact('accounts'));
+    }
+
+
+    //changePassword
+    public function showPassForm($username) {
+        return view('form.PasswordForm', compact('username'));
+    }
+    public function changePassword(Request $request) {
+        $request -> validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string',
+            're_new_password' => 'required|same:new_password',
+        ]);
+
+        $account = Account::where('username', Auth::user() -> username) -> first();
+
+        //check current password
+        if(!Hash::check($request-> input('current_password'), $account-> password)) {
+            return back()-> withErrors(['current_password' => ['Your password was wrong.']]);
+        }
+
+        //check new password with repeat new password
+        if ($request-> new_password !== $request->re_new_password) {
+            return back()-> withErrors(['new_password' => 'The password and password confirmation do not match.']);
+        }
+
+        //change password
+        $account -> password = Hash::make($request -> input('new_password'));
+        $account -> save();
+
+        return redirect() -> route('accountShow', $account -> username)->with('success', 'Password changed successful.');
+    }
+
+
+
+    //block function
+    public function blockAccount(Request $request) {
+        $username = $request -> input('username');
+        $account = Account::where('username', $username) -> first();
+
+        if ($account) {
+            $account-> blocked = !$account -> blocked;
+            $account -> save();
+            $statusMessage = $account -> blocked ? 'Account blocked successfully!' : 'Account unblocked successfully!';
+            return redirect() -> route('home') -> with('status', $statusMessage);
+        }
+        return redirect()->route('home')->with('error', 'Account not found!');
+    }
+
 }

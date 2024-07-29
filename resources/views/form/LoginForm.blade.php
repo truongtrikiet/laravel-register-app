@@ -10,9 +10,15 @@
                         </div>
                         <div class="form-group">
                             <input type="text" id="Usn" placeholder="Username..." name="username" required>
+                            @error('username')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <input type="password" id="Psw" placeholder="Password..." name="password" required>
+                            @error('password')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
                         <div class="form-group">
                             <div class="custom-control custom-checkbox small">

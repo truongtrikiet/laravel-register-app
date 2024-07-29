@@ -20,6 +20,8 @@ return new class extends Migration
             $table -> string('email') -> unique();
             $table -> string('address');
             $table -> string('phone') -> unique();
+            //add new block
+            $table -> boolean('blocked') -> default(false);
             $table -> timestamps();
         });
     }

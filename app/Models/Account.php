@@ -20,7 +20,8 @@ class Account extends Authenticatable implements AuthenticatableContract
         'password',
         'email',
         'phone',
-        'address,'
+        'address',
+        'blocked',
     ];
     protected $table = 'accounts';
 }
